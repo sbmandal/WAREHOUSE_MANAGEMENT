@@ -2,6 +2,7 @@ package warehouseManagementSystem;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class StoreStaff extends AbstractUser{
@@ -21,30 +22,39 @@ public class StoreStaff extends AbstractUser{
 
     @Override
     public void viewUsers() {
-        for(int i=0;i<super.getStore().getUsers().size();i++)
+        Object[] keys = super.getStore().getUsers().keySet().toArray();
+        for(int i=0;i<super.getStore().getUsers().size();++i){
+            if(super.getStore().getUsers().get(keys[i])!=null)
+                System.out.println(i+1+" - "+super.getStore().getUsers().get(keys[i]).toString());
+
+        }
+       /* for(int i=0;i<super.getStore().getUsers().size();i++)
             if(super.getStore().getUsers().get(i)!=null)
-                System.out.println(i+1+" - "+super.getStore().getUsers().get(i).toString());
+                System.out.println(i+1+" - "+super.getStore().getUsers().get(i).toString());*/
     }
 
     @Override
     public String checkUserInfo(AbstractUser user) {
-        List<AbstractUser> users=super.getStore().getUsers();
-        for(int i=0;i<users.size();i++){
-            if(users.get(i).getEmail().equals(user.getEmail())
-                    && users.get(i).getPassword().equals(user.getPassword())
-                    && users.get(i) instanceof StoreStaff){
-                return users.get(i).getName();
-            }
+        Map<String,AbstractUser> users=super.getStore().getUsers();
+        if(users.get(user.getEmail()).getEmail().equals(user.getEmail())
+                && users.get(user.getEmail()).getPassword().equals(user.getPassword())
+                && users.get(user.getEmail()) instanceof StoreStaff){
+            return users.get(user.getEmail()).getName();
         }
         return null;
     }
 
     public boolean registerNewUser(AbstractUser user){
-        for(int i=0;i<super.getStore().getUsers().size();i++){
+        /*for(int i=0;i<super.getStore().getUsers().size();i++){
             if(super.getStore().getUsers().get(i).equals(user)){
                 System.out.println("There is same user in records!!");
                 return false;
             }
+        }*/
+        Map<String,AbstractUser> users=super.getStore().getUsers();
+        if(users.get(user.getEmail())!=null){
+            System.out.println("There is same user in records!!");
+            return false;
         }
         AbstractUser newUser=null;
         if(user instanceof StoreStaff){
@@ -55,31 +65,28 @@ public class StoreStaff extends AbstractUser{
             newUser = new Customer(user.getName(),user.getEmail(),user.getPassword());
         }else
             return false;
-        super.getStore().getUsers().add(newUser);
+        //super.getStore().getUsers().add(newUser);
+        super.getStore().getUsers().put(newUser.getEmail(),newUser);
         System.out.println("The user add operation is done");
         return true;
     }
 
-   /* public boolean removeUser(AbstractUser user){
-        for(int i=0;i<super.getStore().getUsers().size();i++){
-            if(super.getStore().getUsers().get(i).equals(user)){
-                super.getStore().getUsers().remove(i);
-                System.out.println("The remove user operation is done");
-                return true;
-            }
-        }
-        System.out.println("There is no user in records!!");
-        return false;
 
-    }*/
     public boolean removeUser(String email){
-        for(int i=0;i<super.getStore().getUsers().size();i++){
+        Map<String,AbstractUser> users=super.getStore().getUsers();
+        if(users.get(email).getEmail().equals(email)){
+            super.getStore().getUsers().remove(email);
+            System.out.println("The remove user operation is done");
+            return true;
+        }
+       // return false;
+        /*for(int i=0;i<super.getStore().getUsers().size();i++){
             if(super.getStore().getUsers().get(i).getEmail().equals(email)){
                 super.getStore().getUsers().remove(i);
                 System.out.println("The remove user operation is done");
                 return true;
             }
-        }
+        }*/
         System.out.println("There is no user in records!!");
         return false;
 

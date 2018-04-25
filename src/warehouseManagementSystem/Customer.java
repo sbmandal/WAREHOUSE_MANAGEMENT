@@ -1,6 +1,7 @@
 package warehouseManagementSystem;
 
 import java.util.List;
+import java.util.Map;
 
 public class Customer extends AbstractUser{
 
@@ -14,13 +15,11 @@ public class Customer extends AbstractUser{
 
     @Override
     public String checkUserInfo(AbstractUser user) {
-        List<AbstractUser> users=super.getStore().getUsers();
-        for(int i=0;i<users.size();i++){
-            if(users.get(i).getEmail().equals(user.getEmail())
-                    && users.get(i).getPassword().equals(user.getPassword())
-                    && users.get(i) instanceof Customer){
-                return users.get(i).getName();
-            }
+        Map<String,AbstractUser> users=super.getStore().getUsers();
+        if(users.get(user.getEmail()).getEmail().equals(user.getEmail())
+                && users.get(user.getEmail()).getPassword().equals(user.getPassword())
+                && users.get(user.getEmail()) instanceof Customer){
+            return users.get(user.getEmail()).getName();
         }
         return null;
     }

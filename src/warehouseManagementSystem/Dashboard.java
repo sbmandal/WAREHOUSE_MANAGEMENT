@@ -137,11 +137,11 @@ public class Dashboard {
                 flag=true;
                 String[] token = line.split(cvsSplitBy);
                 if(token[3].equals("customer")) {
-                    storeStaff.getStore().getUsers().add(new Customer(token[0],token[1],token[2]));
+                    storeStaff.getStore().getUsers().put(token[1],new Customer(token[0],token[1],token[2]));
                 }else if(token[3].equals("store")){
-                    storeStaff.getStore().getUsers().add(new StoreStaff(token[0],token[1],token[2]));
+                    storeStaff.getStore().getUsers().put(token[1],new StoreStaff(token[0],token[1],token[2]));
                 }else if(token[3].equals("distributor")){
-                    storeStaff.getStore().getUsers().add(new DistributionStuff(token[0],token[1],token[2]));
+                    storeStaff.getStore().getUsers().put(token[1],new DistributionStuff(token[0],token[1],token[2]));
                 }
                 //System.out.println(token[0] + " " + token[1] + " " + token[2]);
             }
@@ -165,21 +165,22 @@ public class Dashboard {
         try{
 
             fileWriter = new FileWriter(filename);
+            Object[] keys = storeStaff.getStore().getUsers().keySet().toArray();
             for(int i=0;i<storeStaff.getStore().getUsers().size();++i){
 
-                fileWriter.append(String.valueOf(storeStaff.getStore().getUsers().get(i).getName()));
+                fileWriter.append(String.valueOf(storeStaff.getStore().getUsers().get(keys[i]).getName()));
                 fileWriter.append(",");
-                fileWriter.append(String.valueOf(storeStaff.getStore().getUsers().get(i).getEmail()));
+                fileWriter.append(String.valueOf(storeStaff.getStore().getUsers().get(keys[i]).getEmail()));
                 fileWriter.append(",");
-                fileWriter.append(String.valueOf(storeStaff.getStore().getUsers().get(i).getPassword()));
+                fileWriter.append(String.valueOf(storeStaff.getStore().getUsers().get(keys[i]).getPassword()));
                 fileWriter.append(",");
-                if(storeStaff.getStore().getUsers().get(i) instanceof Customer) {
+                if(storeStaff.getStore().getUsers().get(keys[i]) instanceof Customer) {
                     fileWriter.append(String.valueOf("customer"));
                     fileWriter.append("\n");
-                }else if(storeStaff.getStore().getUsers().get(i) instanceof StoreStaff){
+                }else if(storeStaff.getStore().getUsers().get(keys[i]) instanceof StoreStaff){
                     fileWriter.append(String.valueOf("store"));
                     fileWriter.append("\n");
-                }else if(storeStaff.getStore().getUsers().get(i) instanceof DistributionStuff){
+                }else if(storeStaff.getStore().getUsers().get(keys[i]) instanceof DistributionStuff){
                     fileWriter.append(String.valueOf("distributor"));
                     fileWriter.append("\n");
                 }

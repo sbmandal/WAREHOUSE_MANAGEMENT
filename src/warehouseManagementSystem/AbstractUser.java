@@ -1,6 +1,7 @@
 package warehouseManagementSystem;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractUser implements UserInterface{
     /**
@@ -67,11 +68,11 @@ public abstract class AbstractUser implements UserInterface{
      */
     @Override
     public String checkUserInfo(AbstractUser user){
-        List<AbstractUser> users=this.getStore().getUsers();
-        for(int i=0;i<users.size();i++){
-            if(users.get(i).getEmail().equals(user.getEmail()) && users.get(i).getPassword().equals(user.getPassword())){
-                return users.get(i).getName();
-            }
+        Map<String,AbstractUser> users=getStore().getUsers();
+        if(users.get(user.getEmail()).getEmail().equals(user.getEmail())
+                && users.get(user.getEmail()).getPassword().equals(user.getPassword())
+                && users.get(user.getEmail()) instanceof AbstractUser){
+            return users.get(user.getEmail()).getName();
         }
         return null;
     }
