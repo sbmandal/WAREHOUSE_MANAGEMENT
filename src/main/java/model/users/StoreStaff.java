@@ -1,7 +1,6 @@
-package warehouseManagementSystem;
+package main.java.model.users;
 
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 

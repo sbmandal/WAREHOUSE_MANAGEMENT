@@ -8,6 +8,15 @@ public class Product implements Comparable<Product>{
     private Double unitPrice;
     private String quality;
 
+    public Product(String name, Double unitPrice, String quality) {
+        this.name = name;
+        this.unitPrice = unitPrice;
+        this.quality = quality;
+    }
+
+    public Product(String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;
@@ -36,6 +45,9 @@ public class Product implements Comparable<Product>{
     @Override
     public int compareTo(Product o) {
         Objects.requireNonNull(o, "Can't Be Null");
+
         return name.compareTo(o.name);
     }
+
+
 }

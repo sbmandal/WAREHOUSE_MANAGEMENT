@@ -1,6 +1,5 @@
-package warehouseManagementSystem;
+package main.java.model.users;
 
-import java.util.List;
 import java.util.Map;
 
 public class DistributionStuff extends AbstractUser{
