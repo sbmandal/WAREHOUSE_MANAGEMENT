@@ -1,6 +1,8 @@
 package bst;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Serializable;
 
 /** Class for a binary tree that stores type E objects.
 *   @author Koffman and Wolfgang

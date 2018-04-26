@@ -1,40 +1,48 @@
 package warehouseManagementSystem;
 
+import bst.BinarySearchTree;
+
+import javax.swing.text.html.HTMLDocument;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Dashboard {
     private static StoreStaff storeStaff = new StoreStaff("admin","admin@gmail.com","password");
-   // private static HotelGuest hotelGuest = new HotelGuest("guest","guest","guest");
+    private static Customer customer = new Customer("Customer","customer@gmail.com","password");
+    private static DistributionStuff  dist= new DistributionStuff("Customer","customer@gmail.com","password");
     private static AbstractUser user=null;
 
     public static void main (String []argv){
-      //  List<Room> rooms = new ArrayList<Room>();
-        boolean state=true;
+
+        BinarySearchTree<Product> products = new BinarySearchTree<>();
+        Map<String,String> stock=new HashMap<>();
+
         if(!loadUsersFromFile("users.csv"))
             storeStaff.registerNewUser(storeStaff);
 
-        //dosyada odalar kayıtlı degilse default olarak otel odalarını olusturuyorum.
-        /*if(!loadRoomsFromFile("rooms.csv")){
 
-            for(int i=1;i<=3;i++){
-                rooms.add(new Room(i,false,false,"for 2 people",10.2));
-            }
-            receptionist.getHotel().setRooms(rooms);
-        }*/
-        /*if(!loadRecordsFromFile("records.csv")){
-            for(int i=0;i<rooms.size();i++){
-                receptionist.getHotel().getHotelRecords()[i][0]=String.valueOf(receptionist.getHotel().getRooms().get(i).getRoomNumber());
-                receptionist.getHotel().getHotelRecords()[i][1]=null;
-                receptionist.getHotel().getHotelRecords()[i][2]=null;
-            }
-        }*/
+        if(!loadProductsFromFile("products.csv")){
+
+            products.add(new Product("productA",2.2,"Super"));
+            products.add(new Product("productB",3.1,"Super"));
+            products.add(new Product("productC",5.1,"FirstClass"));
+
+            storeStaff.getStore().setProducts(products);
+
+        }
+        if(!loadProductsStockFromFile("stocks.csv")){
+            storeStaff.getStore().getProductStock().put("productA","50");
+            storeStaff.getStore().getProductStock().put("productB","60");
+            storeStaff.getStore().getProductStock().put("productC","70");
+        }
+        mainMenu();
+    }
+
+    private static void mainMenu(){
+        boolean state=true;
         try {
             while (state) {
 
@@ -44,7 +52,7 @@ public class Dashboard {
                 System.out.println(" *  Are you Customer                => 1     *");
                 System.out.println(" *  Are you StoreStaff              => 2     *");
                 System.out.println(" *  Are you Distributor             => 3     *");
-                System.out.println(" *  Exit                            => 4     *");
+                System.out.println(" *  Exit                            => 0     *");
                 System.out.println(" *********************************************");
 
                 Scanner reader = new Scanner(System.in);  // Reading from System.in
@@ -55,10 +63,10 @@ public class Dashboard {
                 if (choose == 1) {
                     if ((name = userAuthentication(reader, 1)) != null) {
                         user.setName(name);
-                        //hotelGuest.guestMenu((HotelGuest) user);
+                        customer.customerMenu((Customer)user);
                         saveUsersToFile("users.csv");
-                       // saveRoomsToFile("rooms.csv");
-                        //saveRecordsToFile("records.csv");
+                        saveProductsToFile("products.csv");
+                        saveProductsStockToFile("stocks.csv");
                     } else {
                         System.out.println("Invalid login, please try again");
                     }
@@ -66,30 +74,43 @@ public class Dashboard {
                 } else if (choose == 2) {
                     if ((name = userAuthentication(reader, 2)) != null) {
                         user.setName(name);
-                        storeStaff.receptionistMenu((StoreStaff) user);
+                        storeStaff.storeStaffMenu((StoreStaff) user);
                         saveUsersToFile("users.csv");
-                       // saveRoomsToFile("rooms.csv");
-                      //  saveRecordsToFile("records.csv");
+                        saveProductsToFile("products.csv");
+                        saveProductsStockToFile("stocks.csv");
                     } else {
                         System.out.println("Invalid login, please try again");
                     }
 
                 } else if (choose == 3) {
+                    if ((name = userAuthentication(reader, 2)) != null) {
+                        user.setName(name);
+                        storeStaff.storeStaffMenu((StoreStaff) user);
+                        saveUsersToFile("users.csv");
+                        saveProductsToFile("products.csv");
+                        saveProductsStockToFile("stocks.csv");
+
+                    } else {
+                        System.out.println("Invalid login, please try again");
+                    }
+
+                } else if (choose == 0) {
                     state = false;
                     System.out.println("The program is finished.");
                     saveUsersToFile("users.csv");
-                    //saveRoomsToFile("rooms.csv");
-                    //saveRecordsToFile("records.csv");
-                }else{
+                    saveProductsToFile("products.csv");
+                    saveProductsStockToFile("stocks.csv");
+
+                } else {
                     System.out.println("Invalid Input,Try again ");
                 }
             }
         }catch(InputMismatchException e) {
             System.out.println("Invalid Input,Try again ");
+            mainMenu();
         }
 
     }
-
     /**
      *
      * @param reader reader
@@ -102,11 +123,11 @@ public class Dashboard {
         System.out.println(" *  Enter your password                      *");
         String password = reader.next();
         if(type == 1){
-            user=new DistributionStuff(email,password);
+            user=new Customer(email,password);
         }else if(type == 2){
             user=new StoreStaff(email,password);
         }else if(type == 3){
-            user=new Customer(email,password);
+            user=new DistributionStuff(email,password);
         }
         return polimorfism(user);
     }
@@ -152,12 +173,7 @@ public class Dashboard {
         return flag;
     }
 
-    /**
-     *Bu method kullanicilari dosyaya kaydeder.
-     *
-     * Dosyadan okurken kimin ne oldugu anlasilmsı icin
-     * @param filename kayit yapilan dosya adi.
-     */
+
     private static void saveUsersToFile( String filename) {
 
         FileWriter fileWriter = null;
@@ -184,6 +200,131 @@ public class Dashboard {
                     fileWriter.append(String.valueOf("distributor"));
                     fileWriter.append("\n");
                 }
+            }
+
+        }catch (NullPointerException e) {
+            System.out.println("Error in CsvFileWriter !!!");
+            e.printStackTrace();
+        }catch (Exception e) {
+            System.out.println("Error in CsvFileWriter !!!");
+            e.printStackTrace();
+        }finally {
+
+            try {
+                fileWriter.flush();
+                fileWriter.close();
+            }catch (NullPointerException e) {
+                System.out.println("Error in CsvFileWriter !!!");
+                e.printStackTrace();
+            }catch (IOException e) {
+                System.out.println("Error while flushing/closing fileWriter !!!");
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    private static boolean loadProductsFromFile(String filename) {
+        boolean flag=false;
+        String line = "";
+        String cvsSplitBy = ",";
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
+
+            while ((line = br.readLine()) != null) {
+                flag=true;
+                String[] token = line.split(cvsSplitBy);
+                //System.out.println(token[0] + " " + token[1] + " " + token[2]);
+                storeStaff.getStore().getProducts().add(new Product(token[0],(double)Double.parseDouble(token[1]),token[2]));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
+
+    private static void saveProductsToFile( String filename) {
+
+        FileWriter fileWriter = null;
+
+        try{
+
+            fileWriter = new FileWriter(filename);
+            BinarySearchTree<Product> products = storeStaff.getStore().getProducts();
+            Iterator iter = products.iterator();
+           while (iter.hasNext()){
+                Product product = (Product) iter.next();
+                fileWriter.append(String.valueOf(product.getName()));
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(product.getUnitPrice()));
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(product.getQuality()));
+                fileWriter.append("\n");
+            }
+
+        }catch (NullPointerException e) {
+            System.out.println("Error in CsvFileWriter !!!");
+            e.printStackTrace();
+        }catch (Exception e) {
+            System.out.println("Error in CsvFileWriter !!!");
+            e.printStackTrace();
+        }finally {
+
+            try {
+                fileWriter.flush();
+                fileWriter.close();
+            }catch (NullPointerException e) {
+                System.out.println("Error in CsvFileWriter !!!");
+                e.printStackTrace();
+            }catch (IOException e) {
+                System.out.println("Error while flushing/closing fileWriter !!!");
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    private static boolean loadProductsStockFromFile(String filename) {
+        boolean flag=false;
+        String line = "";
+        String cvsSplitBy = ",";
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
+
+            while ((line = br.readLine()) != null) {
+                flag=true;
+                String[] token = line.split(cvsSplitBy);
+
+                storeStaff.getStore().getProductStock().put(token[0],token[1]);
+                //storeStaff.addStock(token[0],(int)Integer.parseInt(token[1]));
+                //System.out.println(token[0] + " " + token[1] + " " + token[2]);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
+
+
+    private static void saveProductsStockToFile( String filename) {
+
+        FileWriter fileWriter = null;
+
+        try{
+
+            fileWriter = new FileWriter(filename);
+            Object[] keys = storeStaff.getStore().getProductStock().keySet().toArray();
+            for(int i=0;i<storeStaff.getStore().getProductStock().size();++i){
+
+                fileWriter.append(String.valueOf(keys[i].toString()));
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(storeStaff.getStore().getProductStock().get(keys[i])));
+                fileWriter.append("\n");
+
             }
 
         }catch (NullPointerException e) {

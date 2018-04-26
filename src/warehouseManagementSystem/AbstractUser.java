@@ -56,8 +56,7 @@ public abstract class AbstractUser implements UserInterface{
     public Store getStore(){
         return this.store;
     }
-    //@Override
-    //public abstract void viewRooms();
+
     @Override
     public abstract void viewUsers();
 

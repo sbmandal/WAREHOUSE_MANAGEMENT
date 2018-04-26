@@ -1,6 +1,8 @@
 package bst;
 
 
+import java.util.Iterator;
+import java.util.Stack;
 
 /** A class to represent a binary search tree.
  *  @author Koffman and Wolfgang
@@ -208,5 +210,49 @@ public class BinarySearchTree < E
       return findLargestChild(parent.right);
     }
   }
+  public Iterator<E> iterator()
+  {
+    return new MyIterator();
+  }
+  //pre-order
+  private class MyIterator implements Iterator<E>
+  {
+    Stack<Node<E>> stk = new Stack<Node<E>>();
+
+    public MyIterator()
+    {
+      if(root != null) stk.push(root);
+    }
+    public boolean hasNext()
+    {
+      return !stk.isEmpty();
+    }
+
+    public E next()
+    {
+      Node<E> cur = stk.peek();
+      if(cur.left != null)
+      {
+        stk.push(cur.left);
+      }
+      else
+      {
+        Node<E> tmp = stk.pop();
+        while( tmp.right == null )
+        {
+          if(stk.isEmpty()) return cur.data;
+          tmp = stk.pop();
+        }
+        stk.push(tmp.right);
+      }
+
+      return cur.data;
+    }//end of next()
+
+    public void remove()
+    {
+
+    }
+  }//end of MyIterator
 
 }

@@ -18,20 +18,15 @@ public class DistributionStuff extends AbstractUser{
 
     @Override
     public String checkUserInfo(AbstractUser user) {
-        //List<AbstractUser> users=super.getStore().getUsers();
+
         Map<String,AbstractUser> users=super.getStore().getUsers();
-        if(users.get(user.getEmail()).getEmail().equals(user.getEmail())
-                && users.get(user.getEmail()).getPassword().equals(user.getPassword())
-                && users.get(user.getEmail()) instanceof DistributionStuff){
-            return users.get(user.getEmail()).getName();
-        }
-        /*for(int i=0;i<users.size();i++){
-            if(users.get(i).getEmail().equals(user.getEmail())
-                    && users.get(i).getPassword().equals(user.getPassword())
-                    && users.get(i) instanceof DistributionStuff){
-                return users.get(i).getName();
+        if(users.containsKey(user.getEmail())) {
+            if (users.get(user.getEmail()).getEmail().equals(user.getEmail())
+                    && users.get(user.getEmail()).getPassword().equals(user.getPassword())
+                    && users.get(user.getEmail()) instanceof DistributionStuff) {
+                return users.get(user.getEmail()).getName();
             }
-        }*/
+        }
         return null;
     }
 
@@ -39,10 +34,7 @@ public class DistributionStuff extends AbstractUser{
     public boolean equals(Object obj) {
         return super.equals(obj);
     }
-    /**
-     * Bu method sistemdeki kullanicilari print eder .
-     * Sadece resepsiyoniste ait bir method dur bunu hata firlatmaya ornek olarak yaptim.
-     */
+
     @Override
     public void viewUsers(){
         try{

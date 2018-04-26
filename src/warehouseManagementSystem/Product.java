@@ -5,9 +5,15 @@ import java.util.Objects;
 public class Product implements Comparable<Product>{
 
     private String name;
-    private Double unitPrice;
+    private double unitPrice;
     private String quality;
 
+
+    public Product(String name, double unitPrice, String quality) {
+        this.name = name;
+        this.unitPrice = unitPrice;
+        this.quality = quality;
+    }
 
     public String getName() {
         return name;
@@ -17,11 +23,11 @@ public class Product implements Comparable<Product>{
         this.name = name;
     }
 
-    public Double getUnitPrice() {
+    public double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(Double unitPrice) {
+    public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
     }
 
@@ -33,9 +39,16 @@ public class Product implements Comparable<Product>{
         this.quality = quality;
     }
 
+
+
     @Override
     public int compareTo(Product o) {
         Objects.requireNonNull(o, "Can't Be Null");
         return name.compareTo(o.name);
+    }
+
+    @Override
+    public String toString() {
+        return "product // name: "+name+" -- quality: "+quality+" -- unitprice: "+unitPrice;
     }
 }
